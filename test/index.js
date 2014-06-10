@@ -1,6 +1,6 @@
-var calculate = require('./calculate.js'),
+var calculate = require('../lib/calculate.js'),
     data = require('./data.json'),
-    format = require('./format.js'),
+    format = require('../lib/format.js'),
     moment = require('moment'),
     should = require('should');
 
@@ -8,7 +8,7 @@ var today = moment('2014-06-06');
 
 describe('Format results', function() {
   it('should parse data from registry.npmjs.org', function() {
-    var actual = format.packageName(data.registrynpmjs);
+    var actual = format.githubRepo(data.registrynpmjs);
     should(actual).equal('tgriesser/knex');
   });
 
@@ -33,6 +33,20 @@ describe('Calculate score', function() {
       watchCount: 34,
       daysSinceLastCommit: 0
     }, today);
-    should(actual).equal(73);
+    should(actual.rank).equal(73);
+  });
+  it('should keep the inputData in the result', function() {
+    var inputData = {
+      downloadsLastDay: 922,
+      downloadsLastWeek: 4630,
+      downloadsLastMonth: 20703,
+      starCount: 453,
+      watchCount: 34,
+      daysSinceLastCommit: 0
+    };
+    var actual = calculate(inputData, today);
+    for (var key in inputData) {
+      should(actual[key]).equal(inputData[key]);
+    }
   });
 });
